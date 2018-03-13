@@ -1,0 +1,10 @@
+header#masthead{
+  background-color: red;
+}
+
+.edit-data{
+  min-width: 10px;
+  border:0;
+  padding: 0 5px;
+}
+
