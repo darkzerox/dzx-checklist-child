@@ -4,9 +4,21 @@
 
     show_property_list();
 
+    $('#tenant_list').change(function () {
+      console.log('cj');
+      var thisVal = $(this).val();
+      get_people('tenant', thisVal);
+
+    });
+    $('#landlord_list').change(function () {
+      var thisVal = $(this).val();
+      get_people('landlord', thisVal);
+
+    });
 
 
   });
+
 
 
   function show_property_list() {
@@ -30,14 +42,14 @@
           showHtml += `
           
           <ul id="tenant_data">
-            <li>Tenant ID : <input type="text" class="edit-data" name="id"  value="${data.tenant_id}" /></li> 
+            <li class="row_id">Tenant ID : <input type="text" class="edit-data" name="id"  value="${data.tenant_id}" /></li> 
             <li>Tenant Name : <input type="text" class="edit-data" name="name"  value="" /></li> 
             <li>Address : 
               <input type="text" class="edit-data" name="address" value="" /> 
               <input type="text" class="edit-data" name="district" value="" /> 
               <input type="text" class="edit-data" name="city" value="" /> 
               <input type="text" class="edit-data" name="provice" value=""/> 
-              <input type="text" class="edit-data" name="zippost" value=""/> 
+              <input type="text" class="edit-data" name="zippost"  maxlength="5" value=""/> 
             </li> 
             <li>Email : <input type="text" class="edit-data" name="email" value="" /></li>
             <li>Tel. : <input type="text" class="edit-data" name="phone" value="" /></li>
@@ -45,7 +57,7 @@
           </ul>
           
           <ul id="landlord_data">
-            <li>Landlord ID : <input type="text" class="edit-data" name="id" value="${data.landlord_id}" /></li>
+            <li class="row_id">Landlord ID : <input type="text" class="edit-data" name="id" value="${data.landlord_id}" /></li>
             <li>Landlord Name : <input type="text" class="edit-data" name="name" value="" /></li>
             <li>Email : <input type="text" class="edit-data" name="email" value="" /></li>
             <li>Tel. : <input type="text" class="edit-data" name="phone" value="" /></li>   
@@ -54,20 +66,20 @@
               <input type="text" class="edit-data" name="district" value=""/>  
               <input type="text" class="edit-data" name="city" value="" /> 
               <input type="text" class="edit-data" name="provice" value="" /> 
-              <input type="text" class="edit-data" name="zippost" value=""/> 
+              <input type="text" class="edit-data" name="zippost"  maxlength="5" value=""/> 
             </li>
             <button id="landlord_data_update" class="property_btn_update">Update</button>
           </ul>
 
           <ul id="property_data">
-            <li>Property ID : <input type="text" class="edit-data" name="id" value="${data.id}" /></li>
+            <li class="row_id">Property ID : <input type="text" class="edit-data" name="id" value="${data.id}" /></li>
             <li>Property Name : <input type="text" class="edit-data" name="pro_name" value="${data.pro_name}" /></li>
             <li>Property Address : 
               <input type="text" class="edit-data" name="address" value="${data.address}" /> 
               <input type="text" class="edit-data" name="district" value="${data.district}" /> 
               <input type="text" class="edit-data" name="city" value="${data.city}" /> 
               <input type="text" class="edit-data" name="provice" value="${data.provice}" /> 
-              <input type="text" class="edit-data" name="zippost" value="${data.zippost}"/> 
+              <input type="text" class="edit-data" name="zippost" maxlength="5" value="${data.zippost}"/> 
             </li>
             <li>Lease start date : <input type="text" class="edit-data" name="startdate" value="${data.startdate}" /></li>
             <li>Lease expire date : <input type="text" class="edit-data" name="enddate" value="${data.enddate}" /></li>
@@ -78,42 +90,55 @@
 
           showHtml += "</div>";
 
-          get_people('landlord',data.landlord_id);
-          get_people('tenant',data.tenant_id);
-
+          get_people('landlord', data.landlord_id);
+          get_people('tenant', data.tenant_id);
 
           $('#pro_list').remove();
           $(showHtml).insertAfter('.checklist');
 
-          
+          $(' #property_data .edit-data ').each(function () {
+            $(this).css('width', $(this).textWidth() + 10 + "px");
+            $(this).on('mouseenter mouseleave change keydown', function () {
+              $(this).css('width', $(this).textWidth() + 10 + "px");
+            });
+          });
+
 
           //update btn
           $('.property_btn_update').click(function () {
             var formData = $(this).parent().find('.edit-data');
             var table = $(this).parent('ul').attr('id').split('_');
             table = table[0];
+            console.log(table);
             var attr = [];
             formData.each(function () {
               var thisField = $(this).attr('name');
               var thisVal = $(this).val();
 
-              attr.push({field:thisField ,val:thisVal});
+              attr.push({
+                field: thisField,
+                val: thisVal
+              });
 
             })
+
+            if (table == 'property') {
+              attr.push({
+                field: 'landlord_id',
+                val: $('#landlord_data input[name="id"]').val()
+              }, {
+                field: 'tenant_id',
+                val: $('#tenant_data input[name="id"]').val()
+              });
+            }
+
             // console.log(attr);
             updateData(table, attr);
 
-            // edit input inline
-            $('.edit-data').on('input', function () {
-              var inputWidth = $(this).textWidth();
-              $(this).css({
-                width: inputWidth + 10
-              })
-            }).trigger('input');
-
-
           });
-
+          // $('#property_data_update').click(function(){
+          //   $('#tenant_data_update , #landlord_data_update , #property_data_update ').click
+          // })
 
 
         }
@@ -137,7 +162,7 @@
     });
   }
 
-  function get_people(table,id){
+  function get_people(table, id) {
     $.ajax({
       type: 'POST',
       url: darkxee_plist.callurl,
@@ -146,47 +171,46 @@
         'table_name': table,
         'id': id
       },
-      success: function (data) {        
+      success: function (data) {
         data = JSON.parse(data);
+        var chData = data.length == 0 ? false : true;
         data = data[0];
-        //  console.log(data);
-        var ele = "#"+table+"_data input";
-        // console.log(ele);
-          $(ele).each(function(){
+        var ele = "#" + table + "_data input";
+        var elesele = '#' + table + '_list';
+        if (chData) {
+          $(elesele).val(data.id);
+        } else {
+          $(elesele).val(0);
+        }
+
+
+
+
+
+
+        $(ele).each(function () {
+          if (chData) {
             var ele_name = $(this).attr("name");
-            console.log(data[ele_name]);
-            
-              // console.log (data[ele_name]);
-             $(this).val(data[ele_name])
+            $(this).val(data[ele_name]);
+          }
+
+          $(this).css('width', $(this).textWidth() + 10 + "px");
+          $(this).on('mouseenter mouseleave change keydown', function () {
+            $(this).css('width', $(this).textWidth() + 10 + "px");
           });
+
+
+        });
       }
 
     });
   }
 
-
-
-  var targetElem = $('.edit-data');
-  inputWidth(targetElem);
-
-  function inputWidth(elem, minW, maxW) {
-    elem = $(this);
-    // console.log(elem)
-  }
-
   $.fn.textWidth = function (text, font) {
     if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
-    $.fn.textWidth.fakeEl.text(text || this.val() || this.text() || this.attr('placeholder')).css('font', font || this.css('font'));
+    $.fn.textWidth.fakeEl.text(text || this.val() || this.text()).css('font', font || this.css('font'));
     return $.fn.textWidth.fakeEl.width();
   };
 
-
-  function dataCheck(data){
-    if (data != undefined){
-      return data;
-    }else{
-      return "";
-    }
-  }
 
 })(jQuery, jQuery(window), jQuery(document));

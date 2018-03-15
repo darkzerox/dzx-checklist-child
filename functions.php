@@ -53,19 +53,31 @@ function checklist(){
 	//if admin
   if (user_can( $current_user, "administrator")){   
 
-    $property_option_list = "<select id='property_list'><option>เลือก Property</option>";
-    
+    $property_option_list = "<select id='property_list'><option>เลือก Property</option>";    
     $property_lists  = $wpdb->get_results("SELECT id,pro_name FROM ".$dzx_prefix."property");
     
-    foreach ( $property_lists as $property )   {
-     
+    foreach ( $property_lists as $property )   {     
      $property_option_list.= '<option value="'.$property->id.'">'.$property->pro_name.'</option>';
     }
-
     $property_option_list.='</select>';
+		echo $property_option_list;
+		
+		$tenant_option_list = "<select id='tenant_list'><option>เลือกผู้เช่า</option>";    
+    $tenant_lists  = $wpdb->get_results("SELECT id,name FROM ".$dzx_prefix."tenant");
+		foreach ( $tenant_lists as $tenant_list )   {     
+			$tenant_option_list.= '<option value="'.$tenant_list->id.'">'.$tenant_list->name.'</option>';
+		 }
+		 $tenant_option_list.='</select>';
+		 echo $tenant_option_list;
 
+		 $landlord_option_list = "<select id='landlord_list'><option>เลือกผู้ให้เช่า</option>";    
+		 $landlord_lists  = $wpdb->get_results("SELECT id,name FROM ".$dzx_prefix."landlord");
+		 foreach ( $landlord_lists as $landlord_list )   {     
+			 $landlord_option_list.= '<option value="'.$landlord_list->id.'">'.$landlord_list->name.'</option>';
+			}
+			$landlord_option_list.='</select>';
+			echo $landlord_option_list;
 
-    echo $property_option_list;
 
   }
 
@@ -105,16 +117,36 @@ function checklist_update_table(){
 	foreach ($table_data as $key => $value) {
 		if ($value['field'] !="id"){
 			$updateState .= $value['field'] . " = '" . $value['val'] . "'";
+			$setfield .= $value['field'] ;
+			$setval .= "'".$value['val']."'" ;
+
 			if ($key < sizeof($table_data )-1){
 				$updateState .=", ";
+				$setfield .=", ";
+				$setval .=", ";
 			}
 
 		}else{
 			$id = $value['val'];
 		}
+
+		if ($value['field'] !="name"){
+			$name = $value['val'];
+		}
+
+	}
+	//  echo $name;
+
+	if ($id != 'null'){
+		$sql_state = "UPDATE ". $dzx_prefix . $table_name." SET ".$updateState." WHERE id LIKE ". $id;
+	}else{
+		if ($name !=''){
+			$sql_state = "INSERT INTO ". $dzx_prefix . $table_name."(".$setfield.") VALUES (".$setval.")";
+		}
+		
 	}
 
-	$sql_state = "UPDATE ". $dzx_prefix . $table_name." SET ".$updateState." WHERE id LIKE ". $id;
+	
 	echo $sql_state;
 	$wpdb->query( 	
 		$wpdb->prepare($sql_state)

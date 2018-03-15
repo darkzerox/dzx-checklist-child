@@ -3,8 +3,19 @@ header#masthead{
 }
 
 .edit-data{
-  min-width: 10px;
+  min-width:30px !important;
+  max-width:99.99% !important;
+  /* transition: width 0.25s; */
+  text-align:center;
   border:0;
-  padding: 0 5px;
 }
 
+#pro_list {
+  display: table;
+  width: 100%;
+  border: solid 1px #ddd;
+  margin-top: 30px;
+}
+.row_id{
+  display: none;
+}
