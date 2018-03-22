@@ -3,11 +3,12 @@ header#masthead{
 }
 
 .edit-data{
-  min-width:30px !important;
+  min-width:120px !important;
   max-width:99.99% !important;
-  /* transition: width 0.25s; */
+  transition: width 0.25s;
   text-align:center;
   border:0;
+  border-bottom: dashed 1px #ddd;
 }
 
 #pro_list {
@@ -16,6 +17,29 @@ header#masthead{
   border: solid 1px #ddd;
   margin-top: 30px;
 }
-.row_id{
+/* .row_id{
   display: none;
+} */
+
+input.data.hr {
+  border: 0;
+  border-bottom: dashed 1px #ddd;
+  pointer-events: none;
+}
+
+
+
+.property-group {
+  border: solid 1px #ddd;
+  padding: 0 30px 30px;
+  background: #f6f6f6;
+  border-radius: 5px;
+}
+
+.state{
+  display: none;
+  margin: 15px 0 0 0;
+}
+.hidden{
+  display:none;
 }

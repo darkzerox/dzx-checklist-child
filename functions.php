@@ -11,7 +11,7 @@
 /**
  * Define Constants
  */
-define( 'CHILD_THEME_WP_BOOTSTRAP_STARTER_VERSION', '1.0.0' );
+define( 'child_v', '1.0.0' );
 global $dzx_prefix ;
 			$dzx_prefix = "dzx_";
 
@@ -22,13 +22,19 @@ global $dzx_prefix ;
 function child_enqueue_styles() {
 
 	wp_enqueue_style('parent-style',get_template_directory_uri() .'/style.css');
-	wp_enqueue_style( 'child-css', get_stylesheet_directory_uri() . '/asset/css/style.css', array('parent-style'), CHILD_THEME_WP_BOOTSTRAP_STARTER_VERSION, 'all' );
+	wp_enqueue_style( 'child-css', get_stylesheet_directory_uri() . '/asset/css/style.css', array('parent-style'), child_v, 'all' );
+	wp_enqueue_style( 'jquery-ui-css', get_stylesheet_directory_uri() . '/asset/css/jquery-ui.css', array('parent-style'), child_v, 'all' );
+	wp_enqueue_style( 'datepicker-css', get_stylesheet_directory_uri() . '/asset/css/bootstrap-datepicker3.min.css', array('parent-style'), child_v, 'all' );
+
+
 	wp_enqueue_script("jquery");
 	wp_enqueue_script('dzx_checklist_js', get_stylesheet_directory_uri().'/asset/js/property.js', array("jquery"));	
-	wp_localize_script( 'dzx_checklist_js', 'darkxee_plist', array( 'callurl' => admin_url( 'admin-ajax.php')));	
+	wp_localize_script( 'dzx_checklist_js', 'darkxee_plist', array( 'callurl' => admin_url( 'admin-ajax.php')));
 	
-	
+	wp_enqueue_script('typeahead-js', get_stylesheet_directory_uri().'/asset/js/typeahead.jquery.min.js', array("jquery"));	
+	wp_enqueue_script('datepicker-js', get_stylesheet_directory_uri().'/asset/js/bootstrap-datepicker.min.js', array("jquery"));	
 
+	
 }
 
 add_action( 'wp_enqueue_scripts', 'child_enqueue_styles', 15 );
@@ -41,60 +47,46 @@ function getQuery($query){
 	die();
 }
 
-function checklist(){
-	global $wpdb;	
-	global $dzx_prefix;
+function isusr($usr){
 	global $current_user; 
-	 
-		if (user_can( $current_user, "hr")){
-			echo 'hrrrr';
-		}
-		
-	//if admin
-  if (user_can( $current_user, "administrator")){   
-
-    $property_option_list = "<select id='property_list'><option>เลือก Property</option>";    
-    $property_lists  = $wpdb->get_results("SELECT id,pro_name FROM ".$dzx_prefix."property");
-    
-    foreach ( $property_lists as $property )   {     
-     $property_option_list.= '<option value="'.$property->id.'">'.$property->pro_name.'</option>';
-    }
-    $property_option_list.='</select>';
-		echo $property_option_list;
-		
-		$tenant_option_list = "<select id='tenant_list'><option>เลือกผู้เช่า</option>";    
-    $tenant_lists  = $wpdb->get_results("SELECT id,name FROM ".$dzx_prefix."tenant");
-		foreach ( $tenant_lists as $tenant_list )   {     
-			$tenant_option_list.= '<option value="'.$tenant_list->id.'">'.$tenant_list->name.'</option>';
-		 }
-		 $tenant_option_list.='</select>';
-		 echo $tenant_option_list;
-
-		 $landlord_option_list = "<select id='landlord_list'><option>เลือกผู้ให้เช่า</option>";    
-		 $landlord_lists  = $wpdb->get_results("SELECT id,name FROM ".$dzx_prefix."landlord");
-		 foreach ( $landlord_lists as $landlord_list )   {     
-			 $landlord_option_list.= '<option value="'.$landlord_list->id.'">'.$landlord_list->name.'</option>';
-			}
-			$landlord_option_list.='</select>';
-			echo $landlord_option_list;
-
-
-  }
-
+  return user_can($current_user, $usr);
 }
-add_action('checklist_propertylist','checklist');
 
+function usrClass(){
+	if (isusr('administrator')){
+		echo "edit-data admin";
+	}else if (isusr('hr')){
+		echo "data hr";
+	}else{
+		echo "";
+	}
+  
+}
+
+function getlList(){
+	global $dzx_prefix;
+	$table_data = $_POST['attr'];
+	if ($table_data == 'property'){
+		$field = 'pro_name';
+	}else{
+		$field = 'name';
+	}
+	//  echo $field;
+	$querty = "SELECT id,".$field." FROM ".$dzx_prefix.$_POST['attr']; 
+	// echo $querty;
+	getQuery($querty);
+}
+add_action('wp_ajax_getlList', 'getlList');
+add_action('wp_ajax_nopriv_getlList', 'getlList');
 
 function get_property_detail(){
 	global $wpdb;	
 	global $dzx_prefix;
-	global $current_user; 
-	// $_POST['pid'] = 1;
 
-	if (user_can( $current_user, "administrator")){  
 
+	if (isusr("administrator")){
 		$property_detail  = "SELECT *	
-		FROM ".$dzx_prefix."property WHERE
+		FROM ".$dzx_prefix.$_POST['t']." WHERE
 		id = ". $wpdb->prepare($_POST['pid']);
 
 		getQuery(	$property_detail );
@@ -106,60 +98,96 @@ function get_property_detail(){
 add_action('wp_ajax_get_property_detail', 'get_property_detail');
 add_action('wp_ajax_nopriv_get_property_detail', 'get_property_detail');
 
+function checklist_insert_table(){
+	global $dzx_prefix;	
+	global $wpdb;	
+	$table_data =  $_POST['td'];
+	$table_name =  $_POST['tn'];	
 
+	if (isusr("administrator")){
+		foreach ($table_data as $key => $value) {
+			if ($value['name'] !="id"){		
+				$insertField .= $value['name'];
+				$insertValue .= "'".$value['value']."'";
+				if ($key < sizeof($table_data)-1){
+					$insertField .=", ";	
+					$insertValue .=", ";	
+				}
+			}
+		}
+		if ( $table_data[1]['value'] !=''){
+			$sql_state = "INSERT INTO ".$dzx_prefix.$table_name." (".$insertField.") VALUES (".$insertValue.")";		
+				//	echo $sql_state;
+				if ( $wpdb->query( $wpdb->prepare( $sql_state ) ) ){
+						echo true;
+				}
+				die();
+		}
+				
+	}
+}
+add_action('wp_ajax_checklist_insert_table', 'checklist_insert_table');
+// add_action('wp_ajax_nopriv_checklist_insert_table', 'checklist_insert_table');
 
 function checklist_update_table(){
 	global $dzx_prefix;	
 	global $wpdb;	
 	$table_data =  $_POST['table_data'];
-	$table_name = 	$_POST['table_name'];
-	
-	foreach ($table_data as $key => $value) {
-		if ($value['field'] !="id"){
-			$updateState .= $value['field'] . " = '" . $value['val'] . "'";
-			$setfield .= $value['field'] ;
-			$setval .= "'".$value['val']."'" ;
+	$table_name = 	$_POST['table_name'];	
+	if (isusr("administrator")){
+		foreach ($table_data as $key => $value) {
+			if ($value['name'] !="id"){		
+				$updateState .= $value['name'] . " = '" . $value['value'] . "'";
+				if ($key < sizeof($table_data )-1){
+					$updateState .=", ";	
+				}
+			}else{
+				$id = $value['value'];
+			}				
 
-			if ($key < sizeof($table_data )-1){
-				$updateState .=", ";
-				$setfield .=", ";
-				$setval .=", ";
-			}
-
-		}else{
-			$id = $value['val'];
-		}
-
-		if ($value['field'] !="name"){
-			$name = $value['val'];
-		}
-
-	}
-	//  echo $name;
-
-	if ($id != 'null'){
-		$sql_state = "UPDATE ". $dzx_prefix . $table_name." SET ".$updateState." WHERE id LIKE ". $id;
-	}else{
-		if ($name !=''){
-			$sql_state = "INSERT INTO ". $dzx_prefix . $table_name."(".$setfield.") VALUES (".$setval.")";
 		}
 		
+		if ($id != 'null'){
+			$sql_state = "UPDATE ". $dzx_prefix . $table_name." SET ".$updateState." WHERE id LIKE ". $id;
+		}
+
+		if (
+		$wpdb->query( 	
+			$wpdb->prepare($sql_state)
+		)){
+			echo true;
+		}
+		die();
 	}
 
-	
-	echo $sql_state;
-	$wpdb->query( 	
-		$wpdb->prepare($sql_state)
-	);
-	die();
+}
+add_action('wp_ajax_checklist_update_table', 'checklist_update_table');
+// add_action('wp_ajax_nopriv_checklist_update_table', 'checklist_update_table');
+
+function checklist_del_table(){
+	global $dzx_prefix;	
+	global $wpdb;	
+	$table_id =  $_POST['tid'];
+	$table_name = 	$_POST['tn'];	
+	if (isusr("administrator")){
+		$sql_state = "DELETE FROM ".$dzx_prefix.$table_name." WHERE id = ".$table_id;
+	}
+	// echo $sql_state;
+
+	if (
+		$wpdb->query( 	
+			$wpdb->prepare($sql_state)
+		)){
+			echo true;
+		}
+		die();
 
 }
+add_action('wp_ajax_checklist_del_table', 'checklist_del_table');
+// add_action('wp_ajax_nopriv_checklist_del_table', 'checklist_del_table');
 
-add_action('wp_ajax_checklist_update_table', 'checklist_update_table');
-add_action('wp_ajax_nopriv_checklist_update_table', 'checklist_update_table');
 
-
-function get_people(){
+function get_people(){	
 	$query = "SELECT * FROM dzx_".$_POST['table_name']." WHERE id Like ".$_POST['id'];
 	getQuery(	$query );
 }
