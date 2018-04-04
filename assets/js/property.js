@@ -120,7 +120,7 @@
       todayBtn: true,
       todayHighlight: true
     });
-
+ 
 
     //room click
     $('.furniture-list li').click(function () {
