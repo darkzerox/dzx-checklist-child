@@ -79,6 +79,8 @@ get_header();
             <input type="text" class="form-control" name="zippost" placeholder="Zippost">
           </div>
         </div>
+        
+        <hr>
 
         <div class="form-row">
           <div class="form-group col-md-3">

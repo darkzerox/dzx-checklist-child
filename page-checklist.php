@@ -1,85 +1,201 @@
 <?php 
 get_header();
 ?>
-
-<?php 
-    do_action('user_property');
-?>
-
-<div class="checklist"> 
+<div id="content" class="site-content">
+  <div class="container">
+    <div class="row">
 
 
+      <div class="checklist-container">
+        <h2 class="head-top">Expat Living Guide & Moving Checklist</h2>
 
-  
-  <?php 
-  if (isusr("administrator")){ 
-   do_action('checklist_propertylist');
-  }
-  ?>
-
-
-<div id='pro_list'>
-  
-    <ul id="tenant_data">
-      <li class="row_id">Tenant ID : <input type="text" class="<?php  usrClass()?>" name="id" value="" /></li> 
-      <li>Tenant Name : <input type="text" class="<?php  usrClass()?>" name="name"  value="" /></li> 
-      <li>Address : 
-        <input type="text" class="<?php  usrClass()?>" name="address" value="" /> 
-        District : <input type="text" class="<?php  usrClass()?>" name="district" value="" /> 
-        City : <input type="text" class="<?php  usrClass()?>" name="city" value="" /> 
-        Provice : <input type="text" class="<?php  usrClass()?>" name="provice" value=""/> 
-        Zippost : <input type="text" class="<?php  usrClass()?>" name="zippost"  maxlength="5" value=""/> 
-      </li> 
-      <li>Email : <input type="text" class="<?php  usrClass()?>" name="email" value="" /></li>
-      <li>Tel. : <input type="text" class="<?php  usrClass()?>" name="phone" value="" /></li>
-      <?php if (isusr("administrator")){ 
-      ?><button id="tenant_data_update" class="property_btn_update">แก้ไข</button><?php  
-      }?>
-      
-    </ul>
-  
-  
-    <ul id="landlord_data">
-      <li class="row_id">Landlord ID : <input type="text" class="<?php  usrClass()?>" name="id" value="" /></li>
-      <li>Landlord Name : <input type="text" class="<?php  usrClass()?>" name="name" value="" /></li>
-      <li>Email : <input type="text" class="<?php  usrClass()?>" name="email" value="" /></li>
-      <li>Tel. : <input type="text" class="<?php  usrClass()?>" name="phone" value="" /></li>   
-      <li>Address : 
-      <input type="text" class="<?php  usrClass()?>" name="address" value="" /> 
-        District : <input type="text" class="<?php  usrClass()?>" name="district" value=""/>  
-        City : <input type="text" class="<?php  usrClass()?>" name="city" value="" /> 
-        Provice : <input type="text" class="<?php  usrClass()?>" name="provice" value="" /> 
-        Zippost : <input type="text" class="<?php  usrClass()?>" name="zippost"  maxlength="5" value=""/> 
-      </li>
-      <?php if (isusr("administrator")){ 
-      ?><button id="landlord_data_update" class="property_btn_update">แก้ไข</button><?php  
-      }?>
-      
-    </ul>
-  
-  
-    <ul id="property_data">
-      <li class="row_id">Property ID : <input type="text" class="<?php  usrClass()?>" name="id" value="" /></li>
-      <li>Property Name : <input type="text" class="<?php  usrClass()?>" name="pro_name" value="" /></li>
-      <li>Property Address : 
-        <input type="text" class="<?php  usrClass()?>" name="address" value="" /> 
-        District : <input type="text" class="<?php  usrClass()?>" name="district" value="" /> 
-        City : <input type="text" class="<?php  usrClass()?>" name="city" value="" /> 
-        Provice : <input type="text" class="<?php  usrClass()?>" name="provice" value="" /> 
-        Zippost : <input type="text" class="<?php  usrClass()?>" name="zippost" maxlength="5" value=""/> 
-      </li>
-      <li>Lease start date : <input type="text" class="<?php  usrClass()?>" name="startdate" value="" /></li>
-      <li>Lease expire date : <input type="text" class="<?php  usrClass()?>" name="enddate" value="" /></li>      
-      <?php if (isusr("administrator")){ 
-      ?><button id="property_data_update" class="property_btn_update">แก้ไข</button><?php  
-      }?>
-    </ul>
-  
-</div>
+        <div class="group-container">
+          <?php if (isusr('administrator')){ ?>
+          <div class="row margin-b10">
+            <div class="col">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <select id="property_list" class="data-list page-data-list selectpicker form-control btn " data-live-search="true" data="property"
+                    data-style="btn-outline-secondary">
+                  </select>
+                </div>
+              </form>
+            </div>
+          </div>
+          <?php } ?>
 
 
-</div>
+          <div class="row margin-b10">
+            <div class="col form-group">
+              <a class="btn btn-outline-secondary btn-full btn-lg align-left" href="#" role="button">Expat Living Guide</a>
+            </div>
+          </div>
+
+          <div class="row margin-b10">
+            <div class="col form-group">
+              <a class="btn btn-outline-secondary btn-full btn-lg align-left" href="#" role="button">HR Profile</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Button trigger modal -->
+        <button type="button" id="btnInventory" class="btn btn-primary hide" data-toggle="modal" data-target="#property_data_dialog">
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="property_data_dialog" tabindex="-1" role="dialog" aria-labelledby="property_data_dialog" aria-hidden="true">
+          <div class="modal-dialog modal-full modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="property_data_dialog_title">Property Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+
+                <div class="data-group">
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Tenant Name :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="tenant_name"></p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Address :</p>
+                    </div>
+                    <div class="col-9">
+                      <p>
+                        <span id="tenant_address"></span>
+                        <span id="tenant_district"></span>
+                        <span id="tenant_city"></span>
+                        <span id="tenant_provice"></span>
+                        <span id="tenant_zipcode"></span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Tel :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="tenant_tel"></p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Email :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="tenant_email"></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="data-group">
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Landlord Name :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="landlord_name"></p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Address :</p>
+                    </div>
+                    <div class="col-9">
+                      <p>
+                        <span id="landlord_address"></span>
+                        <span id="landlord_district"></span>
+                        <span id="landlord_city"></span>
+                        <span id="landlord_provice"></span>
+                        <span id="landlord_zipcode"></span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Tel :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="landlord_tel"></p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Email :</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="landlord_email"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="data-group">
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Property Address:</p>
+                    </div>
+                    <div class="col-9">
+                      <p>
+                        <span id="pro_address"></span>
+                        <span id="pro_district"></span>
+                        <span id="pro_city"></span>
+                        <span id="pro_provice"></span>
+                        <span id="pro_zipcode"></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="data-group">
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Lease start date:</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="pro_start"></p>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <p>Lease expire date:</p>
+                    </div>
+                    <div class="col-9">
+                      <p id="pro_end"></p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row full center">
+                  <a href="/inventory/" type="button" class="btn btn-danger btn-lg">Inventory</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
 
 
 
-<?php get_footer(); ?>
+
+
+    </div>
+
+
+
+
+    <?php get_footer(); ?>
