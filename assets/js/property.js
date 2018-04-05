@@ -10,75 +10,145 @@
 
   $document.ready(function () {
 
+    //room click
+    $('.furniture-list li').click(function (e) {
+      e.preventDefault();
+      // console.log($(this).text());
+      sndsess('roID', $(this).attr('data'));
+      sndsess('roN', $(this).text());
+      $(this).find('a').css('color', '#ffffff');
+      setTimeout(function () {
+        location.href = '/inventory/room/';
+      }, 800)
+
+    });
+
+
+
     // image uploader
     $.wpMediaUploader();
 
     //new row fern inventroy
     var getRow = $('.fern_data tr:last-child').html();
     var getRoomID = $('.fern_data tr:first-child').attr('room');
-    $('.insert_row').click(function(){       
+    $('.insert_row').click(function () {
       // console.log(getRow);
-      $('.fern_data').append("<tr class='new-row' field='-1' room='"+getRoomID+"'>"+getRow+"</tr>");
-      
+      $('.fern_data').append("<tr class='new-row' field='-1' room='" + getRoomID + "'>" + getRow + "</tr>");
+
     });
 
 
     //ferniture check event
-    $('.fer_check').click(function(){
+    $('.fer_check').click(function () {
       $(this).find('svg').toggleClass('isCheck');
-       
-      var ischeck = $(this).find('input').attr('val');  
-      
-      if (ischeck == 0){
-        $(this).find('input').attr('val',1);
-      }else{
-        $(this).find('input').attr('val',0);  
+
+      var ischeck = $(this).find('input').attr('val');
+
+      if (ischeck == 0) {
+        $(this).find('input').attr('val', 1);
+      } else {
+        $(this).find('input').attr('val', 0);
       }
+
+    });
+
+    //del fern btn
+    $('.btn-del-fern').click(function () {
+      var fer_id = "";
+       fer_id = $(this).attr('data-val');
+      var fer_name = $('.fern_data tr[field=' + fer_id + ']').find('.fer_name').val();
+      var fer_img = $('.fern_data tr[field=' + fer_id + ']').find('.fer_data.fer_img').attr('src');      
+      fer_img = (fer_img === undefined) ? "":fer_img;
       
+      // console.log(fer_id);
+      
+
+      $('.modal-body.del_fern').html(`<div class="fern-dialog-body center"><p>${fer_name}</p><img src="${fer_img}" /></div>`);
+      $('.btn-fern-conf').attr('da',fer_id);
+
+      $('.btn-fern-conf').click(function () {
+        fer_id = $(this).attr('da');
+        // console.log(fer_id);
+        $.ajax({
+          type: 'POST',
+          url: darkxee_plist.callurl,
+          data: {
+            'action': 'fern_del',
+            'd': fer_id,
+          },
+          success: function (data) {
+             console.log(data);
+            $('#del-fern').modal('hide');
+            $('.fern_data tr[field=' + fer_id + ']').remove();
+
+          }
+
+        });
+      });
+
+
+
     });
 
     //update ferniture inventory
-    $('.update_fern').click(function(){
-      
-      var fieldata=[];
-      
-      $('.fern_data tr').each(function(){
+    $('.update_fern').click(function () {
+
+      var fieldata = [];
+      $('.fern_data tr').each(function () {
         var all_row = {};
-          all_row.room = $(this).attr('room');
-          all_row.row_1 = $(this).attr('field');
-          all_row.row_name = $(this).find('.fer_name').val();
-          all_row.row_img = $(this).find('.fer_img .fer_img').attr('src');
-          if (all_row.row_img == undefined) {
-            all_row.row_img = '';
-          }
+        all_row.room = $(this).attr('room');
+        all_row.row_1 = $(this).attr('field');
+        all_row.row_name = $(this).find('.fer_name').val();
+        all_row.row_img = $(this).find('.fer_img .fer_img').attr('src');
+        if (all_row.row_img == undefined) {
+          all_row.row_img = '';
+        }
 
-          all_row.row_check_in = $(this).find('.fer_check_in').attr('val');
-          all_row.row_inphoto = $(this).find('.fer_img_in .fer_img').attr('src');
-          if (all_row.row_inphoto == undefined) {
-            all_row.row_inphoto = '';
-          }
-          all_row.row_in_comment = $(this).find('.fer_comm_in').val();
+        all_row.row_check_in = $(this).find('.fer_check_in').attr('val');
+        all_row.row_inphoto = $(this).find('.fer_img_in .fer_img').attr('src');
+        if (all_row.row_inphoto == undefined) {
+          all_row.row_inphoto = '';
+        }
+        all_row.row_in_comment = $(this).find('.fer_comm_in').val();
 
 
-          all_row.row_check_out = $(this).find('.fer_check_out').attr('val');
-          all_row.row_outphoto = $(this).find('.fer_img_out .fer_img').attr('src');
-          if (all_row.row_outphoto == undefined) {
-            all_row.row_outphoto = '';
-          }
-          all_row.row_out_comment = $(this).find('.fer_comm_out').val();
+        all_row.row_check_out = $(this).find('.fer_check_out').attr('val');
+        all_row.row_outphoto = $(this).find('.fer_img_out .fer_img').attr('src');
+        if (all_row.row_outphoto == undefined) {
+          all_row.row_outphoto = '';
+        }
+        all_row.row_out_comment = $(this).find('.fer_comm_out').val();
+        all_row.row_date = getDateTime();
 
-          fieldata.push(all_row);
+        fieldata.push(all_row);
 
         // console.log(all_row);
       });
+
+
       console.log(fieldata);
-      
+
+      $.ajax({
+        type: 'POST',
+        url: darkxee_plist.callurl,
+        data: {
+          'action': 'fern_insert',
+          'd': fieldata,
+        },
+        success: function (data) {
+          console.log(data);
+          location.reload();
+        }
+
+      });
+
+
     });
 
 
-    
 
-    
+
+
     checklist_reload();
 
     $('.property-group .btn').click(function (e) {
@@ -120,17 +190,9 @@
       todayBtn: true,
       todayHighlight: true
     });
- 
-
-    //room click
-    $('.furniture-list li').click(function () {
-      // console.log($(this).text());
-      sndsess('roID', $(this).attr('data'));
-      sndsess('roN', $(this).text());
 
 
 
-    });
 
 
 
@@ -448,6 +510,16 @@
 
   }
 
+  function getDateTime() {
+    var d = new Date();
+    var month = d.getMonth() + 1;
+    var day = d.getDate();
+    var output = d.getFullYear() + '-' +
+      (('' + month).length < 2 ? '0' : '') + month + '-' +
+      (('' + day).length < 2 ? '0' : '') + day + ' ' + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+    return output;
+  }
 
 
 

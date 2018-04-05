@@ -337,3 +337,19 @@ textarea.fer_data.fer_name {
   overflow: hidden;
 }
 
+.fer_check {
+  display: flex;
+  justify-content: center;
+}
+.fer_check svg{
+  margin:auto 2px;
+}
+
+.center {
+  text-align: center;
+}
+.fern-dialog-body img {
+  max-width:250px;
+  width:100%;
+
+}

@@ -304,6 +304,45 @@ add_action('wp_ajax_nopriv_build_sess', 'build_sess');
 
 
 function fern_insert(){
-	
+	global $dzx_prefix;	
+	global $wpdb;
 
+	$data = $_POST['d'];
+	if (isusr("administrator")){
+		foreach ($data as $key => $v) {
+			if ( $v['row_1'] > "0"){				
+
+				$updateState = "Update ".$dzx_prefix."furniture SET `name` = '".$v['row_name']."', `image` = '".$v['row_img']."', `move_in` = '".$v['row_check_in']."', `move_in_img` = '".$v['row_inphoto']."', `in_comment` = '".$v['row_in_comment']."', `move_out` = '".$v['row_check_out']."', `move_out_img` = '".$v['row_outphoto']."', `out_comment` = '".$v['row_out_comment']."', `date` = '".$v['row_date']."' WHERE `id` = ".$v['row_1']." ;";
+					if ( $wpdb->query( $wpdb->prepare( $updateState ) ) ){
+						echo true;
+					}
+
+			}else{
+				if ( $v['row_name'] != ''){
+					$insertState = "INSERT INTO `dzx_furniture` VALUES (NULL, '".$v['room']."', '".$v['row_name']."', '".$v['row_img']."' , '".$v['row_check_in']."' , '".$v['row_inphoto']."' , '".$v['row_in_comment']."' , '".$v['row_check_out']."' , '".$v['row_outphoto']."' , '".$v['row_out_comment']."' , '".$v['row_date']."');";
+					if ( $wpdb->query( $wpdb->prepare( $insertState ) ) ){
+						echo true;
+					}
+				}
+			}			
+		}	
+	}	
+	//echo $insertState;
 }
+add_action('wp_ajax_fern_insert', 'fern_insert');
+add_action('wp_ajax_nopriv_fern_insert', 'fern_insert');
+
+function fern_del(){
+	global $dzx_prefix;	
+	global $wpdb;
+
+	$id = $_POST['d'];
+	if (isusr("administrator")){
+		$delState = "DELETE FROM `dzx_furniture` WHERE `id` like ".$id;
+		if ( $wpdb->query( $wpdb->prepare( $delState ) ) ){
+			echo true;
+		}
+	}
+}
+add_action('wp_ajax_fern_del', 'fern_del');
+add_action('wp_ajax_nopriv_fern_del', 'fern_del');

@@ -4,7 +4,7 @@ get_header();
  $lanID = $_SESSION['landlord'];
  $tenID = $_SESSION['tenant'];
  $proID = $_SESSION['pro'];
-
+ $_SESSION['roID'] = "";
 
  $lanData = get_userdata($lanID);	
  $tenData = get_userdata($tenID);

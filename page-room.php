@@ -14,7 +14,7 @@ get_header();
 global $wpdb;
 
 
-$room_query = "SELECT * FROM dzx_furniture WHERE room_id LIKE 2 " ;
+$room_query = "SELECT * FROM dzx_furniture WHERE room_id LIKE ".$roomID ;
 $ferniture = $wpdb->get_results($room_query);
 // $ferniture = $ferniture[0];
 
@@ -29,8 +29,8 @@ foreach ($ferniture as $value) {
 
  $fer_check_in_like = ($value->move_in == 1) ? 'isCheck':'' ;
  $fer_check_in_dislike = ($value->move_in == 0) ? 'isCheck':'' ; 
- $fer_check_out_like = ($value->move_in == 0) ? 'isCheck':'' ;
- $fer_check_out_dislike = ($value->move_in == 1) ? 'isCheck':'' ;
+ $fer_check_out_like = ($value->move_out == 1) ? 'isCheck':'' ;
+ $fer_check_out_dislike = ($value->move_out == 0) ? 'isCheck':'' ;
 
 
   $ferTableData .="<tr field='".$value->id."' room = '".$roomID."' >
@@ -69,6 +69,12 @@ foreach ($ferniture as $value) {
                       </div>
                     </td>
                     <td><textarea class='fer_data fer_comm_out' >".$value->out_comment."</textarea></td>
+                    <td>
+                    
+                    <button type='button' class='btn btn-danger btn-del-fern btn-sm' data-toggle='modal' data-target='#del-fern' data-val='".$value->id."'><i class='fas fa-trash-alt'></i></button>
+                    
+                    </td>
+                    
                   </tr>";
 
    
@@ -109,15 +115,13 @@ foreach ($ferniture as $value) {
             </h4>
           </div>
           <div class="col">
-            <h4 class="toppic toppic-nobar">Date of checklist : 22 March 2018</h4>
+            <h4 class="toppic toppic-nobar">Date of checklist : <?php echo date("l  M  Y") ?></h4>
           </div>
         </div>
 
         <div class="row margin30">
-          <div class="col">
+          <div class="col text-right">
             <a href="#" type="button" class="btn btn-success btn-sm">Move in Detect Report</a>
-          </div>
-          <div class="col">
             <a href="#" type="button" class="btn btn-info btn-sm">Move out Detect Report</a>
           </div>
         </div>
@@ -133,6 +137,7 @@ foreach ($ferniture as $value) {
               <th>Move out</th>
               <th>out photo</th>
               <th>Comment</th>
+              <th>Del</th>
             </tr>
           </thead>
           <tfoot>
@@ -145,15 +150,16 @@ foreach ($ferniture as $value) {
 
           <tbody class="fern_data">
             <?php echo $ferTableData; ?>
-
-            <tr class="new-row" field='' room = '<?php echo $roomID ?>' >
+            
+            <!-- //skeleton new fern-->
+              <tr class="new-row" field='-1' room = '<?php echo $roomID ?>' >
                     <td>
                       <textarea class='fer_data fer_name' type='text'></textarea>
                     </td>
                     <td>
-                      <div class=' smartcat-uploader fer_img'>   
-                      <?php echo $fer_img ?>
-                      <input style='display:none' type='text'>
+                      <div class=' smartcat-uploader fer_img'>
+                        <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />
+                        <input style='display:none' type='text'>
                       </div>
                     </td>
                     <td> 
@@ -164,7 +170,7 @@ foreach ($ferniture as $value) {
                     </td>                    
                     <td>
                       <div class=' smartcat-uploader fer_img_in'>                         
-                      <?php echo $fer_img_in ?>                
+                      <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />             
                       <input style='display:none' type='text' name=''>
                       </div>
                     </td>
@@ -177,11 +183,12 @@ foreach ($ferniture as $value) {
                     </td>
                     <td>
                       <div class=' smartcat-uploader fer_img_out'>                         
-                      <?php echo $fer_img_out ?>                   
+                      <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />                   
                       <input style='display:none' type='text' name=''>
                       </div>
                     </td>
                     <td><textarea class='fer_data fer_comm_out' ></textarea></td>
+                    <td></td>
                   </tr>
 
           </tbody>
@@ -197,8 +204,31 @@ foreach ($ferniture as $value) {
 
 
       <div class="row full center">
-        <a href="#" type="button" class="btn btn-success btn-lg update_fern">Save</a>
+        <button href="#" type="button" class="btn btn-success btn-lg update_fern">Save</button>
       </div>
+
+
+
+      <div class="modal fade" id="del-fern" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Remove Ferniture</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body del_fern">
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger btn-fern-conf"><i class='fas fa-trash-alt'></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 
 
