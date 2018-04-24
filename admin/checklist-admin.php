@@ -1,32 +1,53 @@
 <div class="wrap">
-  <h2>Property List</h2>
-
-
+  <div class="title-head">
+    <h2>Property List</h2>
+  </div>
   <div class="property-group">
-    <h2>Property</h2>
+
     <div class="form-row">
 
-      <div class="form-group col">
-        <form class="form-horizontal" role="form">
-          <select id="property_list" class="data-list selectpicker show-tick form-control btn btn-outline-secondary" data-live-search="true" data-style="btn-outline-secondary"  data="property" >
-          </select>
+      <div class="checklist-container col-8">
 
-        </form>
+
+        <?php if (isusr('administrator')){ ?>
+        <div class="row margin-b10">
+          <div class="col">
+
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <select id="property_list" class="data-list page-data-list selectpicker form-control btn " data-live-search="true" data="property"
+                  data-style="btn-outline-secondary">
+                </select>
+                <h3>Property Detail</h3>
+              </div>
+            </form>
+          </div>
+        </div>
+        <?php } ?>
       </div>
 
-      <!-- <div class="form-group col">
-        <select id="property_list" class="custom-select data-list" data="property">
-          <option class="non-select" value="-2">เลือก Property</option>
-          <option class="non-select" value="-1">เพิ่ม property</option>
-        </select>
-      </div>  -->
-      <div class="form-group col">
-        <button type="button" class="btn btn-success" go="property" ac="new">
-          <i class="far fa-plus-square"></i>
-        </button>
-        <button type="button" class="btn btn-danger" go="property" ac="del">
-          <i class="fas fa-trash-alt"></i>
-        </button>
+
+
+      <div class="form-group col-4">
+        <div class="selepro-btngroup">
+          <button type="button" class="btn btn-success" style="width: 60px;height: 60px;" go="property" ac="new">
+            <i class="far fa-plus-square fa-2x"></i>
+          </button>
+          <button type="button" class="btn btn-danger" style="width: 60px;height: 60px;" go="property" ac="ch-del">
+            <i class="fas fa-trash-alt fa-2x"></i>
+          </button>
+        </div>
+        <div class="confirm-del" style="display:none;">
+          <button type="button" class="btn btn-success" style="width: 60px;height: 60px;" go="property" ac="del">
+            <i class="fas fa-check fa-2x"></i>
+          </button>
+          <button type="button" class="btn btn-danger" style="width: 60px;height: 60px;" go="property" ac="cancel">
+            <i class="fas fa-times fa-2x"></i>
+          </button>
+        </div>
+
+
+
       </div>
 
     </div>
@@ -118,18 +139,28 @@
         </div>
         <div class="form-group col-md-3">
           <label for="inputStartDate">Lease start date</label>
-          <input type="text" class="form-control date" name="startdate" placeholder="30/01/2018">
+          <input type="text" class="form-control date" name="startdate" placeholder="30-01-2018">
         </div>
         <div class="form-group col-md-3">
           <label for="inputEndDate">Lease expire date</label>
-          <input type="text" class="form-control date" name="enddate" placeholder="31/05/2018">
+          <input type="text" class="form-control date" name="enddate" placeholder="31-05-2018">
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary btnProperty_Update" go="property" ac="update">Update</button>
+      <button type="submit" class="btn btn-success btnProperty_Update btn-lg" go="property" ac="insert"><i class="fas fa-save"></i> Save</button>
       <div class="state"> </div>
 
 
     </form>
+    <hr/>
+    
+
+
+    <div id="room_lists">
+      
+    </div>
   </div>
+
+
+
 </div>

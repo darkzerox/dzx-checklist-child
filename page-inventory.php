@@ -1,30 +1,12 @@
 <?php 
+/**
+ * Template Name: page-inventory
+ */
+
 get_header();
 
- $lanID = $_SESSION['landlord'];
- $tenID = $_SESSION['tenant'];
- $proID = $_SESSION['pro'];
- $_SESSION['roID'] = "";
+include_once( 'inventory-component/inventory-mid-head.php' );
 
- if ($proID == '' ){
-  ?>
-  <script>    
-    window.location = "/checklist";
-  </script>
-  <?php
-
- }
- 
-
- $lanData = get_userdata($lanID);	
- $tenData = get_userdata($tenID);
-
-  
-//  echo $landData->first_name;
-global $wpdb;
-$query = "SELECT address, district, city, provice, zipcode FROM dzx_property WHERE id LIKE ".$proID;
-$pro_data = $wpdb->get_results($query);
-$pro_data = $pro_data[0];
 
 $room_query = "SELECT * FROM dzx_room WHERE property_id LIKE ".$proID;
 $rooms = $wpdb->get_results($room_query);
@@ -34,62 +16,72 @@ $inside_property = "";
 $outside_property ="";
 foreach ($rooms as $value) {
   if ($value->room_type == 1){
-    $inside_property .= "<li data='".$value->id."'><a href='/inventory/room/'>".$value->name."</a></li>";
+    $inside_property .= "<li class='fer-list' data='".$value->id."'><a href='/inventory/room/'>".$value->name."</a></li>";
   }else{
-    $outside_property .= "<li data='".$value->id."'><a href='/inventory/room/'>".$value->name."</a></li>";
+    $outside_property .= "<li class='fer-list' data='".$value->id."'><a href='/inventory/room/'>".$value->name."</a></li>";
   }
 
    
 }
 
-
-
-
 ?>
 
-<div class="pro-detail">
-  <div class="container">
-    <div class="row">
-      <div class="col">Tenant :
-        <?php echo $tenData->first_name;?>
-      </div>
-      <div class="col">Landlord :
-        <?php echo $lanData->first_name;?>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col"> Address :
-        <?php echo $pro_data->address." ".$pro_data->district." ".$pro_data->city." ".$pro_data->provice." ".$pro_data->zipcode." "?>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="content" class="site-content inventory-page">
-  <div class="container">
-    <div class="row">
+  <div id="content" class="site-content inventory-page">
+    <div class="container">
+      <div class="row">
+        <div class="checklist-container">
+          <div class="row">
+            <div class="col">
+              <h1 id="property_name">
+                <?php echo $pro_data->pro_name ?>
+              </h1>
+            </div>
+          </div>
+          <h3 class="toppic toppic-success">Inside Property</h3>
+          <div class="furniture">
+            <ul class="furniture-list">
+              <?php echo $inside_property; ?>
+              <!-- <li class="room-insert">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Room Name">
+                  <div class="input-group-append btnRoom-new">
+                    <span class="input-group-text">
+                      <i class="fas fa-plus-square"></i>
+                    </span>
+                  </div>
+                </div>
+              </li> -->
 
-      <div class="checklist-container">
+            </ul>
 
-        <h3 class="toppic toppic-success">Inside Property</h3>
-        <div class="furniture">
-          <ul class="furniture-list">
-            <?php echo $inside_property; ?>
-          </ul>
+          </div>
+
+          <h3 class="toppic toppic-danger">Outside Property</h3>
+          <div class="furniture">
+            <ul class="furniture-list">
+              <?php echo $outside_property; ?>
+
+              <!-- <li class="room-insert">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Room Name">
+                  <div class="input-group-append btnRoom-new">
+                    <span class="input-group-text">
+                      <i class="fas fa-plus-square"></i>
+                    </span>
+                  </div>
+                </div>
+              </li> -->
+            </ul>
+          </div>
+
+
         </div>
 
-        <h3 class="toppic toppic-danger">Outside Property</h3>
-        <div class="furniture">
-          <ul class="furniture-list">
-          <?php echo $outside_property; ?>
-          </ul>
+        <div class="row full center">
+          <a href="/report/" type="button" class="btn btn-success btn-lg">Report</a>
         </div>
 
 
-      </div>
-
-      <div class="row full center">
-        <a href="#" type="button" class="btn btn-success btn-lg">See All</a>
-      </div>
 
 
 
@@ -103,6 +95,4 @@ foreach ($rooms as $value) {
 
 
 
-
-
-      <?php get_footer(); ?>
+        <?php get_footer(); ?>

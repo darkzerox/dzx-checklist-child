@@ -7,33 +7,27 @@
  * @package WP_Bootstrap_Starter
  */
 
-get_header(); ?>
+get_header();
+?>
 <div id="content" class="site-content">
   <div class="container">
     <div class="row">
-	<section id="primary" class="content-area col-sm-12 col-lg-8">
-		<main id="main" class="site-main" role="main">
-
-			<section class="error-404 not-found">
-				<header class="page-header">
-					<h1 class="page-title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'wp-bootstrap-starter' ); ?></h1>
-				</header><!-- .page-header -->
-
-				<div class="page-content">
-					<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try one of the links below or a search?', 'wp-bootstrap-starter' ); ?></p>
-
-					<?php
-						get_search_form();
 
 
-					?>
+      <div class="checklist-container">
+				<h1 class="center" style="font-size: 150px;">404</h1>
+				<h2 class="head-top center">Oops! That page can’t be found.</h2> 
+				<div class="row center"><a href="/" class="btn btn-info">Back</a></div>  
+				
+      </div>
 
-				</div><!-- .page-content -->
-			</section><!-- .error-404 -->
 
-		</main><!-- #main -->
-	</section><!-- #primary -->
 
-<?php
-get_sidebar();
-get_footer();
+
+
+    </div>
+
+
+
+
+    <?php get_footer(); ?>

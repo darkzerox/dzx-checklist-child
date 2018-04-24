@@ -1,45 +1,31 @@
 <?php 
+/**
+ * Template Name: page-room
+ */
 get_header();
-
- $lanID = $_SESSION['landlord'];
- $tenID = $_SESSION['tenant'];
- $proID = $_SESSION['pro'];
- $roomID = $_SESSION['roID'];
-
- if ($proID == '' ){
-  ?>
-  <script>    
-    window.location = "/checklist";
-  </script>
-  <?php
-
- }
-
- $lanData = get_userdata($lanID);	
- $tenData = get_userdata($tenID);
- 
-
-global $wpdb;
-
+    
+include_once( 'inventory-component/inventory-mid-head.php' );
 
 $room_query = "SELECT * FROM dzx_furniture WHERE room_id LIKE ".$roomID ;
 $ferniture = $wpdb->get_results($room_query);
-// $ferniture = $ferniture[0];
 
-// print_r($ferniture);
 $uploadIcon = "/wp-content/uploads/2018/04/upload_icob.png";
 $ferTableData="";
+
 foreach ($ferniture as $value) {
 
  $fer_img = ($value->image != '') ? "<img class='smartcat-upload  fer_data fer_img' src=".$value->image." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
  $fer_img_in =  ($value->move_in_img != '') ? "<img class='smartcat-upload fer_data fer_img ' src=".$value->move_in_img." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
  $fer_img_out =  ($value->move_out_img != '') ? "<img class='smartcat-upload fer_data  fer_img ' src=".$value->move_out_img." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
 
- $fer_check_in_like = ($value->move_in == 1) ? 'isCheck':'' ;
- $fer_check_in_dislike = ($value->move_in == 0) ? 'isCheck':'' ; 
- $fer_check_out_like = ($value->move_out == 1) ? 'isCheck':'' ;
- $fer_check_out_dislike = ($value->move_out == 0) ? 'isCheck':'' ;
+ $fer_check_in_like = ($value->move_in == 1) ? 'checked':'' ;
+ $fer_check_in_dislike = ($value->move_in == 0) ? 'checked':'' ; 
+ $fer_check_out_like = ($value->move_out == 1) ? 'checked':'' ;
+ $fer_check_out_dislike = ($value->move_out == 0) ? 'checked':'' ;
 
+ $inID = randomSTR();
+ $outID = randomSTR();
+ 
 
   $ferTableData .="<tr field='".$value->id."' room = '".$roomID."' >
                     <td>
@@ -52,9 +38,15 @@ foreach ($ferniture as $value) {
                       </div>
                     </td>
                     <td> 
-                      <div class='fer_check'>
-                        <i class='far fa-2x fa-thumbs-up ". $fer_check_in_like ."'></i> <i class='far fa-2x fa-thumbs-down ". $fer_check_in_dislike ."'></i>
-                        <input class='fer_data fer_check_in' style='display:none' type='text' val=".$value->move_in.">
+                      <div class='fer_check fer_check_in'>
+                        <input id='thumbs-up-".$inID."' type='radio' name='fer_check_in".$inID."' value='1' class='thumbs-up' ".$fer_check_in_like."/>
+                        <label class='fer_check_state fer_check_in' for='thumbs-up-".$inID."'>
+                          ".$faUp."
+                        </label>
+                        <input id='thumbs-down-".$inID."' type='radio' name='fer_check_in".$inID."' value='0' class='thumbs-down' ".$fer_check_in_dislike."/>
+                        <label class='fer_check_state fer_check_in' for='thumbs-down-".$inID."'>
+                        ".$faDown."
+                        </label>
                       </div>
                     </td>                    
                     <td>
@@ -65,9 +57,16 @@ foreach ($ferniture as $value) {
                     </td>
                     <td><textarea class='fer_data fer_comm_in' >".$value->in_comment."</textarea></td>
                     <td>
-                      <div class='fer_check'>
-                        <i class='far fa-thumbs-up fa-2x ". $fer_check_out_like ."'></i> <i class='far fa-2x fa-thumbs-down ". $fer_check_out_dislike ."'></i>
-                        <input class='fer_data fer_check_out' style='display:none' type='text' val=".$value->move_out.">
+                      <div class='fer_check fer_check_out'>
+                        <input id='thumbs-up-".$outID."' type='radio' name='fer_check_out".$outID."' value='1' class='thumbs-up' ".$fer_check_out_like."/>
+                        <label class='fer_check_state fer_check_out' for='thumbs-up-".$outID."'>
+                        ".$faUp."
+                        </label>
+                        <input id='thumbs-down-".$outID."' type='radio' name='fer_check_out".$outID."' value='0'
+                          class='thumbs-down' ".$fer_check_out_dislike." />
+                        <label class='fer_check_state fer_check_out' for='thumbs-down-".$outID."'>
+                        ".$faDown."
+                        </label>
                       </div>
                     </td>
                     <td>
@@ -86,31 +85,14 @@ foreach ($ferniture as $value) {
                   </tr>";
 
    
+
+
+
 }
-
-
-
-
 
 ?>
 
-<div class="pro-detail">
-  <div class="container">
-    <div class="row">
-      <div class="col">Tenant :
-        <?php echo $tenData->first_name;?>
-      </div>
-      <div class="col">Landlord :
-        <?php echo $lanData->first_name;?>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col"> Address :
-        <?php echo $pro_data->address." ".$pro_data->district." ".$pro_data->city." ".$pro_data->provice." ".$pro_data->zipcode." "?>
-      </div>
-    </div>
-  </div>
-</div>
+
 <div id="content" class="site-content inventory-page">
   <div class="container">
     <div class="row">
@@ -118,101 +100,69 @@ foreach ($ferniture as $value) {
       <div class="checklist-container">
         <div class="row">
           <div class="col">
+            <h1>
+              <?php echo $pro_data->pro_name; ?>
+            </h1>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
             <h4 class="toppic toppic-success">
               <?php echo $_SESSION['roN'] ?>
             </h4>
           </div>
           <div class="col">
-            <h4 class="toppic toppic-nobar">Date of checklist : <?php echo date("l  M  Y") ?></h4>
+            <h4 class="toppic toppic-nobar" style="text-align: right;">Date of checklist :
+              <?php echo date("l  M  Y") ?>
+            </h4>
           </div>
         </div>
 
-        <div class="row margin30">
-          <div class="col text-right">
-            <a href="#" type="button" class="btn btn-success btn-sm">Move in Detect Report</a>
-            <a href="#" type="button" class="btn btn-info btn-sm">Move out Detect Report</a>
-          </div>
-        </div>
+        <?php
+       
+       include_once( 'inventory-component/move-in-out-report.php' );
+       ?>
 
-        <table class="table-style-dzx">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Photo</th>
-              <th>Move in</th>
-              <th>in photo</th>
-              <th>Comment</th>
-              <th>Move out</th>
-              <th>out photo</th>
-              <th>Comment</th>
-              <th>Del</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <td >
-                <button class="btn btn-info btn-sm insert_row"><i class="fas fa-plus"></i></button>
-              </td>
-            </tr>
-          </tfoot>
 
-          <tbody class="fern_data">
-            <?php echo $ferTableData; ?>
-            
-            <!-- //skeleton new fern-->
-              <tr class="new-row" field='-1' room = '<?php echo $roomID ?>' >
-                    <td>
-                      <textarea class='fer_data fer_name' type='text'></textarea>
-                    </td>
-                    <td>
-                      <div class=' smartcat-uploader fer_img'>
-                        <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />
-                        <input style='display:none' type='text'>
-                      </div>
-                    </td>
-                    <td> 
-                      <div class='fer_check'>
-                        <i class='far fa-2x fa-thumbs-up isCheck'></i> <i class='far fa-2x fa-thumbs-down'></i>
-                        <input class='fer_data fer_check_in' style='display:none' type='text' val='1'>
-                      </div>
-                    </td>                    
-                    <td>
-                      <div class=' smartcat-uploader fer_img_in'>                         
-                      <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />             
-                      <input style='display:none' type='text' name=''>
-                      </div>
-                    </td>
-                    <td><textarea class='fer_data fer_comm_in' ></textarea></td>
-                    <td>
-                      <div class='fer_check'>
-                        <i class='far fa-thumbs-up fa-2x isCheck'></i> <i class='far fa-2x fa-thumbs-down'></i>
-                        <input class='fer_data fer_check_out' style='display:none' type='text' val='1'>
-                      </div>
-                    </td>
-                    <td>
-                      <div class=' smartcat-uploader fer_img_out'>                         
-                      <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />                   
-                      <input style='display:none' type='text' name=''>
-                      </div>
-                    </td>
-                    <td><textarea class='fer_data fer_comm_out' ></textarea></td>
-                    <td></td>
-                  </tr>
 
-          </tbody>
+          <table class="table-style-dzx">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Photo</th>
+                <th>Move in</th>
+                <th>in photo</th>
+                <th>Comment</th>
+                <th>Move out</th>
+                <th>out photo</th>
+                <th>Comment</th>
+                <th>Del</th>
+              </tr>
+            </thead>         
+           
 
-         
+            <tbody class="fern_data" room="<?php echo $roomID?>">
+              <?php echo $ferTableData; 
+              
+              //skele_inventory(randomSTR(),randomSTR(),$roomID);
           
-        </table>
-        
+              ?>
 
+              
+
+            </tbody>
+
+          </table>
+          <button class="btn btn-info btn-sm insert_row">
+            <i class="fas fa-plus"></i>
+          </button>
       </div>
 
 
-
-
       <div class="row full center">
+        <a href="/inventory/" class="btn btn-secondary btn-lg ">Back</a>&ensp;
         <button href="#" type="button" class="btn btn-success btn-lg update_fern">Save</button>
+
       </div>
 
 
@@ -227,11 +177,13 @@ foreach ($ferniture as $value) {
               </button>
             </div>
             <div class="modal-body del_fern">
-              
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger btn-fern-conf"><i class='fas fa-trash-alt'></i></button>
+              <button type="button" class="btn btn-danger btn-fern-conf">
+                <i class='fas fa-trash-alt'></i>
+              </button>
             </div>
           </div>
         </div>
@@ -243,7 +195,6 @@ foreach ($ferniture as $value) {
 
 
 
-  
 
 
       <?php get_footer(); ?>

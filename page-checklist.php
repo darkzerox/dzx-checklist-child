@@ -1,4 +1,8 @@
+
 <?php 
+/**
+ * Template Name: page-checklist
+ */
 get_header();
 ?>
 <div id="content" class="site-content">
@@ -22,25 +26,45 @@ get_header();
               </form>
             </div>
           </div>
-          <?php } ?>
+          <?php }else if ( is_user_logged_in() ) {
+            $userType = "";
+            $userID = get_current_user_id();
+            if (isusr('landlord')){
+              $userType ='landlord';
+            }
+            if (isusr('tenant')){
+              $userType ='tenant';
+            }
+            ?>
+
+            <div class="row margin-b10">
+            <div class="col">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <select id="property_report_list" uid="<?php echo $userID; ?>" uty="<?php echo $userType; ?>" class="report-data-list selectpicker form-control btn " data-live-search="true" data="property"
+                    data-style="btn-outline-secondary">
+                  </select>
+                </div>
+              </form>
+            </div>
+          </div>
+
+            <?php
+          } ?>
 
 
           <div class="row margin-b10">
             <div class="col form-group">
-              <a class="btn btn-outline-secondary btn-full btn-lg align-left" href="#" role="button">Expat Living Guide</a>
+              <a class="btn btn-outline-secondary btn-full btn-lg align-left" href="/expat/" role="button">Expat Living Guide</a>
             </div>
           </div>
 
-          <div class="row margin-b10">
+          <!-- <div class="row margin-b10">
             <div class="col form-group">
               <a class="btn btn-outline-secondary btn-full btn-lg align-left" href="#" role="button">HR Profile</a>
             </div>
-          </div>
+          </div> -->
         </div>
-
-        <!-- Button trigger modal -->
-        <button type="button" id="btnInventory" class="btn btn-primary hide" data-toggle="modal" data-target="#property_data_dialog">
-        </button>
 
         <!-- Modal -->
         <div class="modal fade" id="property_data_dialog" tabindex="-1" role="dialog" aria-labelledby="property_data_dialog" aria-hidden="true">
