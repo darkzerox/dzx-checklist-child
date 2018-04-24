@@ -6,6 +6,16 @@ get_header();
  $proID = $_SESSION['pro'];
  $_SESSION['roID'] = "";
 
+ if ($proID == '' ){
+  ?>
+  <script>    
+    window.location = "/checklist";
+  </script>
+  <?php
+
+ }
+ 
+
  $lanData = get_userdata($lanID);	
  $tenData = get_userdata($tenID);
 

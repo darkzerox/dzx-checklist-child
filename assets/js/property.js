@@ -55,16 +55,16 @@
     //del fern btn
     $('.btn-del-fern').click(function () {
       var fer_id = "";
-       fer_id = $(this).attr('data-val');
+      fer_id = $(this).attr('data-val');
       var fer_name = $('.fern_data tr[field=' + fer_id + ']').find('.fer_name').val();
-      var fer_img = $('.fern_data tr[field=' + fer_id + ']').find('.fer_data.fer_img').attr('src');      
-      fer_img = (fer_img === undefined) ? "":fer_img;
-      
+      var fer_img = $('.fern_data tr[field=' + fer_id + ']').find('.fer_data.fer_img').attr('src');
+      fer_img = (fer_img === undefined) ? "" : fer_img;
+
       // console.log(fer_id);
-      
+
 
       $('.modal-body.del_fern').html(`<div class="fern-dialog-body center"><p>${fer_name}</p><img src="${fer_img}" /></div>`);
-      $('.btn-fern-conf').attr('da',fer_id);
+      $('.btn-fern-conf').attr('da', fer_id);
 
       $('.btn-fern-conf').click(function () {
         fer_id = $(this).attr('da');
@@ -77,7 +77,7 @@
             'd': fer_id,
           },
           success: function (data) {
-             console.log(data);
+            console.log(data);
             $('#del-fern').modal('hide');
             $('.fern_data tr[field=' + fer_id + ']').remove();
 
@@ -520,6 +520,139 @@
 
     return output;
   }
+
+
+
+
+  //signature
+  $document.ready(function () {
+    
+    var savePNGButton = ''
+    var clearButton_tenant;
+    var clearButton_landlord;
+    if ($.find('.signature-pad').length > 0) {
+
+      var wrapper_tenant = document.getElementById("signature-tenant");
+       clearButton_tenant = wrapper_tenant.querySelector("[data-action=clear]");
+      savePNGButton = wrapper_tenant.querySelector("[data-action=save-png]");
+
+      var canvas_tenant = wrapper_tenant.querySelector("canvas");
+      var signaturePad_tenant = new SignaturePad(canvas_tenant, {
+        backgroundColor: 'rgb(255, 255, 255)'
+      });
+
+      var wrapper_landlord = document.getElementById("signature-landlord");
+      clearButton_landlord = wrapper_landlord.querySelector("[data-action=clear]");
+      savePNGButton = wrapper_landlord.querySelector("[data-action=save-png]");
+
+      var canvas_landlord = wrapper_landlord.querySelector("canvas");
+      var signaturePad_landlord = new SignaturePad(canvas_landlord, {
+        backgroundColor: 'rgb(255, 255, 255)'
+      });
+
+    }
+
+    function resizeCanvas() {
+      var ratio = Math.max(window.devicePixelRatio || 1, 1);
+      // This part causes the canvas to be cleared
+      canvas_tenant.width = canvas_tenant.offsetWidth * ratio;
+      canvas_tenant.height = canvas_tenant.offsetHeight * ratio;
+      canvas_tenant.getContext("2d").scale(ratio, ratio);
+      signaturePad_tenant.clear();
+
+      canvas_landlord.width = canvas_landlord.offsetWidth * ratio;
+      canvas_landlord.height = canvas_landlord.offsetHeight * ratio;
+      canvas_landlord.getContext("2d").scale(ratio, ratio);
+
+      signaturePad_landlord.clear();
+    }
+
+    function dataURLToBlob(dataURL) {
+
+      var parts = dataURL.split(';base64,');
+      var contentType = parts[0].split(":")[1];
+      var raw = window.atob(parts[1]);
+      var rawLength = raw.length;
+      var uInt8Array = new Uint8Array(rawLength);
+
+      for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+
+      return new Blob([uInt8Array], {
+        type: contentType
+      });
+    }
+
+    if ($.find('.signature-pad').length > 0) {
+
+      // window.onresize = resizeCanvas;
+      // resizeCanvas();
+
+
+      $('.sign-btn').click(function(){
+        var thisBtn = $(this);
+        var data = thisBtn.attr('data-action');
+        var dataRole =thisBtn.attr('datarole'); 
+        var dataID = thisBtn.attr('data-id'); 
+        var dataURL;
+
+        if (data == "clear" ){
+          if (dataRole == 'landlord'){
+            signaturePad_landlord.clear();
+          }
+          if (dataRole == 'tenant'){
+            signaturePad_tenant.clear();
+          }
+        }
+
+        if (data == "save-png") {
+            // console.log(dataRole);            
+            if (dataRole == 'landlord'){
+              dataURL = signaturePad_landlord.toDataURL();
+            }
+            if (dataRole == 'tenant'){
+              dataURL = signaturePad_tenant.toDataURL();
+            }
+
+
+
+            // var blob = dataURLToBlob(dataURL);
+            // // var blobUrl = URL.createObjectURL(blob);
+            // console.log(dataURL);
+
+            var formData = new FormData();
+            formData.append('action', 'add_sign');
+            formData.append('bs', dataURL);
+            formData.append('rid', dataID);
+            formData.append('rs', dataRole);
+
+            $.ajax({
+              type: 'POST',
+              url: darkxee_plist.callurl,              
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data) {
+                thisBtn.removeClass('btn-info').addClass('btn-success').text('Success');
+                $('.'+dataRole+'_sign_img').attr('src',dataURL);
+              }
+            });
+
+
+        }
+        
+      })
+
+      // savePNGButton.addEventListener("click", function (event) {
+
+      //     var dataURL = signaturePad.toDataURL();
+      //     var blob = dataURLToBlob(dataURL);
+      //     console.log(blob);
+        
+      // });
+    }
+  });
 
 
 

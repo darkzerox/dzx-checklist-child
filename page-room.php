@@ -6,6 +6,14 @@ get_header();
  $proID = $_SESSION['pro'];
  $roomID = $_SESSION['roID'];
 
+ if ($proID == '' ){
+  ?>
+  <script>    
+    window.location = "/checklist";
+  </script>
+  <?php
+
+ }
 
  $lanData = get_userdata($lanID);	
  $tenData = get_userdata($tenID);
@@ -19,13 +27,13 @@ $ferniture = $wpdb->get_results($room_query);
 // $ferniture = $ferniture[0];
 
 // print_r($ferniture);
-
+$uploadIcon = "/wp-content/uploads/2018/04/upload_icob.png";
 $ferTableData="";
 foreach ($ferniture as $value) {
 
- $fer_img = ($value->image != '') ? "<img class='smartcat-upload  fer_data fer_img' src=".$value->image." />":"<img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />";
- $fer_img_in =  ($value->move_in_img != '') ? "<img class='smartcat-upload fer_data fer_img ' src=".$value->move_in_img." />":"<img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />";
- $fer_img_out =  ($value->move_out_img != '') ? "<img class='smartcat-upload fer_data  fer_img ' src=".$value->move_out_img." />":"<img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />";
+ $fer_img = ($value->image != '') ? "<img class='smartcat-upload  fer_data fer_img' src=".$value->image." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
+ $fer_img_in =  ($value->move_in_img != '') ? "<img class='smartcat-upload fer_data fer_img ' src=".$value->move_in_img." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
+ $fer_img_out =  ($value->move_out_img != '') ? "<img class='smartcat-upload fer_data  fer_img ' src=".$value->move_out_img." />":"<img class='smartcat-upload upload_icon' src='".$uploadIcon."' />";
 
  $fer_check_in_like = ($value->move_in == 1) ? 'isCheck':'' ;
  $fer_check_in_dislike = ($value->move_in == 0) ? 'isCheck':'' ; 
@@ -158,7 +166,7 @@ foreach ($ferniture as $value) {
                     </td>
                     <td>
                       <div class=' smartcat-uploader fer_img'>
-                        <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />
+                        <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />
                         <input style='display:none' type='text'>
                       </div>
                     </td>
@@ -170,7 +178,7 @@ foreach ($ferniture as $value) {
                     </td>                    
                     <td>
                       <div class=' smartcat-uploader fer_img_in'>                         
-                      <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />             
+                      <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />             
                       <input style='display:none' type='text' name=''>
                       </div>
                     </td>
@@ -183,7 +191,7 @@ foreach ($ferniture as $value) {
                     </td>
                     <td>
                       <div class=' smartcat-uploader fer_img_out'>                         
-                      <img class='smartcat-upload' src='/wp-content/uploads/2018/04/upload.png' />                   
+                      <img class='smartcat-upload ' src='<?php echo $uploadIcon ?>' />                   
                       <input style='display:none' type='text' name=''>
                       </div>
                     </td>
@@ -233,6 +241,9 @@ foreach ($ferniture as $value) {
 
 
 
+
+
+  
 
 
       <?php get_footer(); ?>

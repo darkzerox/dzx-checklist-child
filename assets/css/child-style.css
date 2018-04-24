@@ -310,20 +310,20 @@ ul.furniture-list li:hover {
 }
 
 .fa-thumbs-up.isCheck {
-  background: #29b473;
+  background-color: #29b473;
   border-color: #29b473;
   color: #fff;
 }
 
 .fa-thumbs-down.isCheck {
-  background: #ec1c25;
+  background-color: #ec1c25;
   border-color: #ec1c25;
   color: #fff;
 }
 
 .table-style-dzx td:first-child {
   text-align: center;
-  padding: 0 10px;  
+  padding: 0 10px;
   word-break: break-word;
 }
 
@@ -341,15 +341,35 @@ textarea.fer_data.fer_name {
   display: flex;
   justify-content: center;
 }
-.fer_check svg{
-  margin:auto 2px;
+
+.fer_check svg {
+  margin: auto 2px;
 }
 
 .center {
   text-align: center;
 }
-.fern-dialog-body img {
-  max-width:250px;
-  width:100%;
 
+.fern-dialog-body img {
+  max-width: 250px;
+  width: 100%;
+}
+
+.btn-del-fern.btn-sm {
+  margin: 5px;
+}
+
+.row.flex_center {
+  justify-content: center;
+}
+
+
+.sign-btn {
+  margin: 0 10px;
+}
+
+.signature-pad canvas {
+  border: solid 2px #c8c8c8;
+  border-radius: 10px;
+  margin: 10px;
 }

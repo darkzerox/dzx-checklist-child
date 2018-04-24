@@ -47,8 +47,14 @@ function child_enqueue_styles() {
 	wp_enqueue_script('datepicker-js', get_stylesheet_directory_uri().'/assets/js/bootstrap-datepicker.min.js', array("jquery"));
 	wp_enqueue_script('bootstrap-select-search', get_stylesheet_directory_uri().'/assets/js/bootstrap-select.min.js', array("jquery"));
 
+	wp_enqueue_script('signature_pad', get_stylesheet_directory_uri().'/assets/js/signature_pad.umd.js', array("jquery"));
+
+
 	wp_enqueue_media();
 	wp_enqueue_script('dzx_upload_plugin_js', get_stylesheet_directory_uri().'/assets/js/wp_media_uploader.min.js', array("jquery"),1.0);
+
+
+	
 
 }
 
@@ -257,7 +263,7 @@ function get_people(){
 	getQuery(	$query );
 }
 add_action('wp_ajax_get_people', 'get_people');
-add_action('wp_ajax_nopriv_get_people', 'get_people');
+// add_action('wp_ajax_nopriv_get_people', 'get_people');
 
 
 function search($array, $key, $value)
@@ -330,7 +336,8 @@ function fern_insert(){
 	//echo $insertState;
 }
 add_action('wp_ajax_fern_insert', 'fern_insert');
-add_action('wp_ajax_nopriv_fern_insert', 'fern_insert');
+// add_action('wp_ajax_nopriv_fern_insert', 'fern_insert');
+
 
 function fern_del(){
 	global $dzx_prefix;	
@@ -345,4 +352,30 @@ function fern_del(){
 	}
 }
 add_action('wp_ajax_fern_del', 'fern_del');
-add_action('wp_ajax_nopriv_fern_del', 'fern_del');
+// add_action('wp_ajax_nopriv_fern_del', 'fern_del');
+
+
+
+function add_sign(){
+	global $dzx_prefix;	
+	global $wpdb;
+
+	$blob = $_POST['bs'];
+	$role = $_POST['rs'];
+	$id = $_POST['rid'];
+
+	// echo  $role ;
+	echo  $blob ;
+
+	if (isusr("administrator")){
+		$delState = "Update ".$dzx_prefix."property SET `".$role."_sign` = '".$blob."' WHERE id LIKE ".$id;
+		if ( $wpdb->query( $wpdb->prepare( $delState ) ) ){
+			echo true;
+		} 
+	}
+
+	die();
+
+}
+add_action('wp_ajax_add_sign', 'add_sign');
+// add_action('wp_ajax_nopriv_add_sign', 'add_sign');
